@@ -71,6 +71,7 @@ for epoch in range(epochs):
     ):
         optimizer.zero_grad()
         features, targets = batch["features"], batch["target"]
+        print(features)
         targets = torch.as_tensor(targets, device=device)
         logits = vimmsd_model(**features)
         loss = F.cross_entropy(logits, targets)
