@@ -75,7 +75,7 @@ for epoch in range(epochs):
         logits = vimmsd_model(**features)
         loss = F.cross_entropy(logits, targets)
         loss.backward()
-        nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+        nn.utils.clip_grad_norm_(vimmsd_model.parameters(), max_norm=1.0)
         optimizer.step()
         scheduler.step()
         f1_score = f1_metric(F.softmax(logits, dim=1), targets)
