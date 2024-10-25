@@ -29,7 +29,7 @@ class ImageModel(_nn.Module):
         self._model = _get_peft_model(base_model, lora_config)
 
     def forward(self, x):
-        return self._model(**x)[:, 0, :]
+        return self._model(**x).last_hidden_state[:, 0, :]
 
 
 class VimmsdModel(_nn.Module):
