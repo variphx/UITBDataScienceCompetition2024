@@ -6,3 +6,4 @@ torch
 torchvision
 einops
 peft
+pillow

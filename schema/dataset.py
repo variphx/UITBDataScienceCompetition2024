@@ -1,5 +1,6 @@
 import json as _json
 import pathlib as _pathlib
+from PIL import Image
 from torch.utils.data import Dataset as _Dataset
 from torchvision.transforms.v2 import Compose as _Compose
 from transformers import (
@@ -40,7 +41,9 @@ class VimmsdDataset(_Dataset):
         item = self._data[str(index)]
         features = {
             "image": self._image_processor(
-                self._image_transforms(self._images_dir.joinpath(item["image"]))
+                self._image_transforms(
+                    Image.open(self._images_dir.joinpath(item["image"]))
+                )
             ),
             "text": self._tokenizer(item["caption"]),
         }
