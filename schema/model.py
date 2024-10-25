@@ -60,6 +60,6 @@ class VimmsdModel(_nn.Module):
         text_outputs = self._text_model(text)
         text_outputs = text_outputs.reshape([text_outputs.shape[0], -1])
         text_outputs = _torch.as_tensor(text_outputs, device=self._device)
-        combined = _torch.cat([image_outputs, text_outputs], dim=1)
+        combined = _torch.cat([image_outputs, text_outputs], dim=-1)
         logits = self._fc(combined)
         return logits
