@@ -81,6 +81,7 @@ for epoch in range(epochs):
         f1_score = f1_metric(F.softmax(logits, dim=1), targets)
         progress_bar.set_postfix({"loss": f"{loss.item():.4f}", "f1": f"{f1_score}"})
 
+torch.save(vimmsd_model.state_dict(), "/kaggle/working/model.pth")
 
 infer_dataset = dataset.VimmsdDataset(
     data_file="/kaggle/input/vimmsd-uit2024/vimmsd-public-test.json",
