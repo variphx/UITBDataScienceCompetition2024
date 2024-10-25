@@ -30,7 +30,7 @@ train_dataset = dataset.VimmsdDataset(
 )
 
 vimmsd_model = model.VimmsdModel()
-vimmsd_model([train_dataset[0]])
+vimmsd_model(**train_dataset[0])
 
 training_args = TrainingArguments(
     output_dir="/kaggle/working/model",
