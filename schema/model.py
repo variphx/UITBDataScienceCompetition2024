@@ -32,8 +32,7 @@ class ImageModel(_nn.Module):
 
     def forward(self, x):
         outputs = self._model(**x)
-        print(outputs)
-        return outputs
+        return outputs.last_hidden_state[:, 0, :]
 
 
 class VimmsdModel(_nn.Module):
