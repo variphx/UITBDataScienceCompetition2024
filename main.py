@@ -9,9 +9,7 @@ from transformers import TrainingArguments
 
 
 image_size = [256, 256]
-image_transforms = Compose(
-    [ToImage(), ToDtype(torch.float32, scale=True), Resize(image_size)]
-)
+image_transforms = Compose([ToImage(), ToDtype(torch.float32, scale=True)])
 class_names = ["not-sarcasm", "image-sarcasm", "text-sarcasm", "multi-sarcasm"]
 
 text_tokenizer = AutoTokenizer.from_pretrained("jinaai/jina-embeddings-v3")
