@@ -37,7 +37,7 @@ class VimmsdDataset(_Dataset):
         return len(self._data)
 
     def __getitem__(self, index):
-        item = self._data[index]
+        item = self._data[str(index)]
         features = {
             "image": self._image_processor(
                 self._image_transforms(self._images_dir.joinpath(item["image"]))
