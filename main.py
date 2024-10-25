@@ -10,7 +10,7 @@ from transformers import TrainingArguments
 
 image_size = [256, 256]
 image_transforms = Compose(
-    [ToImage(), Resize(image_size), ToDtype(torch.float32, scale=True)]
+    [ToImage(), ToDtype(torch.float32, scale=True), Resize(image_size)]
 )
 class_names = ["not-sarcasm", "image-sarcasm", "text-sarcasm", "multi-sarcasm"]
 
