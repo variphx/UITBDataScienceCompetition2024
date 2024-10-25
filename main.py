@@ -4,7 +4,6 @@ import torch
 from torch.utils.data import DataLoader
 from torch.nn import functional as F
 from torchvision.transforms.v2 import Compose, ToImage, ToDtype
-from transformers import AutoTokenizer, AutoImageProcessor
 from transformers import TrainingArguments
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -12,10 +11,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 image_transforms = Compose([ToImage(), ToDtype(torch.float32, scale=False)])
 class_names = ["not-sarcasm", "image-sarcasm", "text-sarcasm", "multi-sarcasm"]
 
-text_tokenizer = AutoTokenizer.from_pretrained("jinaai/jina-embeddings-v3")
-image_processor = AutoImageProcessor.from_pretrained(
-    "google/vit-base-patch16-224-in21k"
-)
+text_tokenizer = trainer.text_tokenizer
+image_processor = trainer.image_processor
 
 train_dataset = dataset.VimmsdDataset(
     data_file="/kaggle/input/vimmsd-uit2024/vimmsd-train.json",

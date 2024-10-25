@@ -39,8 +39,8 @@ class VimmsdModel(_nn.Module):
     def __init__(self, device=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._device = device
-        self._image_model = ImageModel()
-        self._text_model = TextModel()
+        self._image_model = ImageModel().to(self._device)
+        self._text_model = TextModel().to(self._device)
         self._fc = _nn.Sequential(
             _nn.LazyLinear(1024),
             _nn.GELU(),
@@ -52,15 +52,15 @@ class VimmsdModel(_nn.Module):
             _nn.Tanh(),
             _nn.Dropout(0.2),
             _nn.Linear(64, 4),
-        )
+        ).to(self._device)
 
     def forward(self, image, text):
         image_outputs = self._image_model(image)
         image_outputs = image_outputs.reshape([image_outputs.shape[0], -1])
-        image_outputs = _torch.as_tensor(image_outputs, device=self._device)
+        image_outputs = _torch.tensor(image_outputs, device=self._device)
         text_outputs = self._text_model(text)
         text_outputs = text_outputs.reshape([text_outputs.shape[0], -1])
-        text_outputs = _torch.as_tensor(text_outputs, device=self._device)
+        text_outputs = _torch.tensor(text_outputs, device=self._device)
         combined = _torch.cat([image_outputs, text_outputs], dim=-1)
         logits = self._fc(combined)
         return logits
