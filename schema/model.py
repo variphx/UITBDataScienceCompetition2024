@@ -30,7 +30,7 @@ class ImageModel(_nn.Module):
 
     def forward(self, x):
         print(x)
-        return self._model(x)
+        return self._model(**x)
 
 
 class VimmsdModel(_nn.Module):
