@@ -11,7 +11,7 @@ class TextModel(_nn.Module):
             "jinaai/jina-embeddings-v3", trust_remote_code=True
         )
         lora_config = _LoraConfig(
-            init_lora_weights="olora", target_modules=["Wqkv", "out_proj"]
+            init_lora_weights="olora", target_modules=["out_proj", "dense"]
         )
         self._model = _get_peft_model(base_model, lora_config)
 
@@ -41,10 +41,10 @@ class VimmsdModel(_nn.Module):
             _nn.LazyLinear(1024),
             _nn.GELU(),
             _nn.Dropout(0.2),
-            _nn.Linear(1024, 256),
+            _nn.Linear(1024, 4096),
             _nn.GELU(),
             _nn.Dropout(0.2),
-            _nn.Linear(256, 64),
+            _nn.Linear(4096, 64),
             _nn.Tanh(),
             _nn.Dropout(0.2),
             _nn.Linear(64, 4),
