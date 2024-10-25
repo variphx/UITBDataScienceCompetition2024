@@ -26,9 +26,12 @@ train_dataset = dataset.VimmsdDataset(
     image_processor=image_processor,
     task="train",
 )
+decoy_dataloader = DataLoader(train_dataset, batch_size=1)
 
 vimmsd_model = model.VimmsdModel(device=device)
-vimmsd_model(**train_dataset[0]["features"])
+vimmsd_model(**next(iter(decoy_dataloader)))
+
+del decoy_dataloader
 
 training_args = TrainingArguments(
     output_dir="/kaggle/working/model",
