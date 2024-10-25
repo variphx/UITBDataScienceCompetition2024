@@ -16,7 +16,7 @@ class TextModel(_nn.Module):
         self._model = _get_peft_model(base_model, lora_config)
 
     def forward(self, x):
-        return self._model(x)
+        return self._model.encode(x)
 
 
 class ImageModel(_nn.Module):
