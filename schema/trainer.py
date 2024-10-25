@@ -19,3 +19,8 @@ class Trainer(_Trainer):
         return _lr_scheduler.CosineAnnealingLR(
             optimizer=optimizer, T_max=num_training_steps
         )
+
+    def create_optimizer_and_scheduler(self, num_training_steps):
+        optimizer = self.create_optimizer()
+        scheduler = self.create_scheduler(num_training_steps, optimizer)
+        return (optimizer, scheduler)
