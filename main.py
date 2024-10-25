@@ -29,7 +29,7 @@ train_dataset = dataset.VimmsdDataset(
 decoy_dataloader = DataLoader(train_dataset, batch_size=1)
 
 vimmsd_model = model.VimmsdModel(device=device)
-vimmsd_model(**next(iter(decoy_dataloader)))
+vimmsd_model(**(next(iter(decoy_dataloader))["features"]))
 
 del decoy_dataloader
 
