@@ -5,7 +5,7 @@ from peft import LoraConfig as _LoraConfig, get_peft_model as _get_peft_model
 
 
 class TextModel(_nn.Module):
-    def __init__(self, device=None, *args, **kwargs):
+    def __init__(self, device, *args, **kwargs):
         super().__init__(*args, **kwargs)
         base_model = _AutoModel.from_pretrained(
             "jinaai/jina-embeddings-v3", trust_remote_code=True
@@ -21,7 +21,7 @@ class TextModel(_nn.Module):
 
 
 class ImageModel(_nn.Module):
-    def __init__(self, device=None, *args, **kwargs):
+    def __init__(self, device, *args, **kwargs):
         super().__init__(*args, **kwargs)
         base_model = _AutoModel.from_pretrained("google/vit-base-patch16-224-in21k")
         lora_config = _LoraConfig(
@@ -37,7 +37,7 @@ class ImageModel(_nn.Module):
 
 
 class VimmsdModel(_nn.Module):
-    def __init__(self, device=None, *args, **kwargs):
+    def __init__(self, device, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._device = device
         self._image_model = ImageModel(device=device)
