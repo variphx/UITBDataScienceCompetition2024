@@ -4,6 +4,7 @@ datasets
 transformers
 torch
 torchvision
+torchmetrics
 einops
 peft
 pillow
