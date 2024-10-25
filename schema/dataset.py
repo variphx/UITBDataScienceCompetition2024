@@ -43,7 +43,8 @@ class VimmsdDataset(_Dataset):
             "image": self._image_processor(
                 self._image_transforms(
                     Image.open(self._images_dir.joinpath(item["image"]))
-                )
+                ),
+                return_tensors="pt",
             ),
             "text": self._tokenizer(item["caption"]),
         }

@@ -3,10 +3,11 @@ from schema import dataset, trainer, model
 import torch
 from torch.utils.data import DataLoader
 from torch.nn import functional as F
-from torchvision.transforms.v2 import Compose, Resize, ToImage, ToDtype
+from torchvision.transforms.v2 import Compose, ToImage, ToDtype
 from transformers import AutoTokenizer, AutoImageProcessor
 from transformers import TrainingArguments
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 image_size = [256, 256]
 image_transforms = Compose([ToImage(), ToDtype(torch.float32, scale=True)])
