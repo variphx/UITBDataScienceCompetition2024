@@ -31,6 +31,7 @@ class ImageModel(_nn.Module):
         self._model = _get_peft_model(base_model, lora_config)
 
     def forward(self, x):
+        x = x.to(self._device)
         outputs = self._model(**x)
         return outputs.last_hidden_state[:, 0, :]
 
