@@ -7,7 +7,9 @@ from peft import LoraConfig as _LoraConfig, get_peft_model as _get_peft_model
 class TextModel(_nn.Module):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        base_model = _AutoModel.from_pretrained("jinaai/jina-embeddings-v3")
+        base_model = _AutoModel.from_pretrained(
+            "jinaai/jina-embeddings-v3", trust_remote_code=True
+        )
         lora_config = _LoraConfig(
             init_lora_weights="olora", target_modules=["Wqkv", "out_proj"]
         )
