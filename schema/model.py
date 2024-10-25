@@ -22,7 +22,7 @@ class ImageModel(_nn.Module):
         super().__init__(*args, **kwargs)
         base_model = _AutoModel.from_pretrained("google/vit-base-patch16-224-in21k")
         lora_config = _LoraConfig(
-            init_lora_weights="olora", target_modules=["query", "value", "output"]
+            init_lora_weights="olora", target_modules=["query", "value"]
         )
         self._model = _get_peft_model(base_model, lora_config)
 
