@@ -29,6 +29,7 @@ class ImageModel(_nn.Module):
         self._model = _get_peft_model(base_model, lora_config)
 
     def forward(self, x):
+        print(x)
         return self._model(x)
 
 
