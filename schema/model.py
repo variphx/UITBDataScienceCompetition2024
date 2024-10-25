@@ -28,7 +28,7 @@ class ImageModel(_nn.Module):
             init_lora_weights="olora", target_modules=["query", "value"]
         )
         self._device = device
-        self._model = _get_peft_model(base_model, lora_config).to(self._device)
+        self._model = _get_peft_model(base_model, lora_config)
 
     def forward(self, x):
         outputs = self._model(**x)
@@ -58,11 +58,13 @@ class VimmsdModel(_nn.Module):
         image_outputs = self._image_model(image)
         image_outputs = image_outputs.reshape([image_outputs.shape[0], -1])
         image_outputs = _torch.tensor(image_outputs, device=self._device)
+        print(image_outputs)
 
         text_outputs = self._text_model(text)
         text_outputs = text_outputs.reshape([text_outputs.shape[0], -1])
         text_outputs = _torch.tensor(text_outputs, device=self._device)
-        
+        print(text_outputs)
+
         combined = _torch.cat([image_outputs, text_outputs], dim=-1)
         logits = self._fc(combined)
         return logits
