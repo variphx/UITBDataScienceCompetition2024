@@ -1,6 +1,7 @@
 import json as _json
 import pathlib as _pathlib
-from PIL import Image
+from PIL import Image as _Image
+import torch as _torch
 from torch.utils.data import Dataset as _Dataset
 from torchvision.transforms.v2 import Compose as _Compose
 from transformers import (
@@ -40,12 +41,16 @@ class VimmsdDataset(_Dataset):
     def __getitem__(self, index):
         item = self._data[str(index)]
         features = {
-            "image": self._image_processor(
-                images=self._image_transforms(
-                    Image.open(self._images_dir.joinpath(item["image"])).convert("RGB")
-                ),
-                return_tensors="pt",
-            )[0],
+            "image": _torch.squeeze(
+                self._image_processor(
+                    images=self._image_transforms(
+                        _Image.open(self._images_dir.joinpath(item["image"])).convert(
+                            "RGB"
+                        )
+                    ),
+                    return_tensors="pt",
+                )
+            ),
             "text": item["caption"],
         }
         if self._task == "train":
