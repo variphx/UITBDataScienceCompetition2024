@@ -15,7 +15,7 @@ class Trainer(_Trainer):
     def create_optimizer(self):
         return _optim.AdamW(self.model.parameters())
 
-    def create_scheduler(self, num_training_steps, optimizer=None):
+    def create_scheduler(self, num_training_steps, optimizer):
         return _lr_scheduler.CosineAnnealingLR(
             optimizer=optimizer, T_max=num_training_steps
         )
