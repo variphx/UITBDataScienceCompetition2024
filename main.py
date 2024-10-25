@@ -21,15 +21,14 @@ train_dataset = dataset.VimmsdDataset(
     data_file="/kaggle/input/vimmsd-uit2024/vimmsd-train.json",
     images_dir="/kaggle/input/vimmsd-uit2024/training-images/train-images",
     class_names=class_names,
-    tokenizer=text_tokenizer,
-    image_transforms=image_transforms,
-    image_processor=image_processor,
     task="train",
 )
-decoy_dataloader = DataLoader(train_dataset, batch_size=1)
+decoy_dataloader = DataLoader(
+    train_dataset, batch_size=1, collate_fn=trainer.train_collate_fn
+)
+
 
 vimmsd_model = model.VimmsdModel(device=device)
-print(next(iter(decoy_dataloader))["features"])
 vimmsd_model(**(next(iter(decoy_dataloader))["features"]))
 
 del decoy_dataloader

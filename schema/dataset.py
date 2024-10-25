@@ -16,9 +16,6 @@ class VimmsdDataset(_Dataset):
         data_file: str,
         images_dir: str,
         class_names: list[str],
-        tokenizer: _PretrainedTokenizer,
-        image_transforms: _Compose,
-        image_processor: _BaseImageProcessor,
         task: str,
     ):
         super().__init__()
@@ -31,9 +28,6 @@ class VimmsdDataset(_Dataset):
         with open(data_file, "r") as f:
             self._data: dict[str, dict[str, str]] = _json.load(f)
         self._images_dir = _pathlib.PurePath(images_dir)
-        self._tokenizer = tokenizer
-        self._image_transforms = image_transforms
-        self._image_processor = image_processor
 
     def __len__(self):
         return len(self._data)
@@ -41,15 +35,8 @@ class VimmsdDataset(_Dataset):
     def __getitem__(self, index):
         item = self._data[str(index)]
         features = {
-            "image": _torch.squeeze(
-                self._image_processor(
-                    images=self._image_transforms(
-                        _Image.open(self._images_dir.joinpath(item["image"])).convert(
-                            "RGB"
-                        )
-                    ),
-                    return_tensors="pt",
-                )
+            "image": _Image.open(self._images_dir.joinpath(item["image"])).convert(
+                "RGB"
             ),
             "text": item["caption"],
         }
