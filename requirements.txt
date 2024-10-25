@@ -1,0 +1,8 @@
+numpy
+pandas
+datasets
+transformers
+torch
+torchvision
+einops
+peft
