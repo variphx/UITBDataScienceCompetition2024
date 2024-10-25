@@ -9,7 +9,7 @@ from transformers import TrainingArguments
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-image_transforms = Compose([ToImage(), ToDtype(torch.float32, scale=True)])
+image_transforms = Compose([ToImage(), ToDtype(torch.float32, scale=False)])
 class_names = ["not-sarcasm", "image-sarcasm", "text-sarcasm", "multi-sarcasm"]
 
 text_tokenizer = AutoTokenizer.from_pretrained("jinaai/jina-embeddings-v3")
