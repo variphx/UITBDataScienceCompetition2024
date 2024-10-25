@@ -13,7 +13,7 @@ class Trainer(_Trainer):
         return (loss, logits) if return_outputs else loss
 
     def create_optimizer(self):
-        return _optim.AdamW()
+        return _optim.AdamW(self.model.parameters())
 
     def create_scheduler(self, num_training_steps, optimizer=None):
         return _lr_scheduler.CosineAnnealingLR(
