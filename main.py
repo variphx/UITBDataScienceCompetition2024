@@ -7,6 +7,8 @@ from torchvision.transforms.v2 import Compose, ToImage, ToDtype
 from transformers import AutoTokenizer, AutoImageProcessor
 from transformers import TrainingArguments
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 image_transforms = Compose([ToImage(), ToDtype(torch.float32, scale=False)])
 class_names = ["not-sarcasm", "image-sarcasm", "text-sarcasm", "multi-sarcasm"]
 
@@ -25,7 +27,7 @@ train_dataset = dataset.VimmsdDataset(
     task="train",
 )
 
-vimmsd_model = model.VimmsdModel()
+vimmsd_model = model.VimmsdModel(device=device)
 vimmsd_model(**train_dataset[0]["features"])
 
 training_args = TrainingArguments(
