@@ -45,7 +45,7 @@ class VimmsdModel(_nn.Module):
             _nn.GELU(),
             _nn.Dropout(0.2),
             _nn.Linear(256, 64),
-            _nn.GELU(),
+            _nn.Tanh(),
             _nn.Dropout(0.2),
             _nn.Linear(64, 4),
         )

@@ -42,7 +42,7 @@ class VimmsdDataset(_Dataset):
         features = {
             "image": self._image_processor(
                 self._image_transforms(
-                    Image.open(self._images_dir.joinpath(item["image"]))
+                    Image.open(self._images_dir.joinpath(item["image"])).convert("RGB")
                 ),
                 return_tensors="pt",
             ),

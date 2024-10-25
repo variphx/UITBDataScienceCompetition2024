@@ -9,7 +9,6 @@ from transformers import TrainingArguments
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-image_size = [256, 256]
 image_transforms = Compose([ToImage(), ToDtype(torch.float32, scale=True)])
 class_names = ["not-sarcasm", "image-sarcasm", "text-sarcasm", "multi-sarcasm"]
 
