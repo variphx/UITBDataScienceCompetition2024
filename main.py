@@ -21,11 +21,13 @@ train_dataset = dataset.VimmsdDataset(
     task="train",
 )
 decoy_dataloader = DataLoader(
-    train_dataset, batch_size=1, collate_fn=trainer.train_collate_fn
+    train_dataset,
+    batch_size=1,
+    collate_fn=trainer.train_collate_fn,
 )
 
 
-vimmsd_model = model.VimmsdModel(device=device)
+vimmsd_model = model.VimmsdModel(device=device).to(device)
 vimmsd_model(**(next(iter(decoy_dataloader))["features"]))
 
 del decoy_dataloader
