@@ -31,7 +31,9 @@ class ImageModel(_nn.Module):
         self._model = _get_peft_model(base_model, lora_config).to(self._device)
 
     def forward(self, x):
-        return self._model(**x).last_hidden_state[:, 0, :]
+        outputs = self._model(**x)
+        print(outputs)
+        return outputs
 
 
 class VimmsdModel(_nn.Module):
