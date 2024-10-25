@@ -45,7 +45,7 @@ class VimmsdDataset(_Dataset):
                     Image.open(self._images_dir.joinpath(item["image"])).convert("RGB")
                 ),
                 return_tensors="pt",
-            ),
+            )[0],
             "text": item["caption"],
         }
         if self._task == "train":
