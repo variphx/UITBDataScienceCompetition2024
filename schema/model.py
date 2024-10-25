@@ -1,5 +1,6 @@
 import torch as _torch
 from torch import nn as _nn
+from torch.nn import functional as _F
 from transformers import AutoModel as _AutoModel
 from peft import LoraConfig as _LoraConfig, get_peft_model as _get_peft_model
 
@@ -59,10 +60,12 @@ class VimmsdModel(_nn.Module):
         image_outputs = self._image_model(image)
         image_outputs = image_outputs.reshape([image_outputs.shape[0], -1])
         image_outputs = _torch.as_tensor(image_outputs, device=self._device)
+        image_outputs = _F.tanh(image_outputs)
 
         text_outputs = self._text_model(text)
         text_outputs = text_outputs.reshape([text_outputs.shape[0], -1])
         text_outputs = _torch.as_tensor(text_outputs, device=self._device)
+        text_outputs = _F.tanh(text_outputs)
 
         combined = _torch.cat([image_outputs, text_outputs], dim=1)
         logits = self._fc(combined)
