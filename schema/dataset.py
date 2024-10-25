@@ -46,7 +46,7 @@ class VimmsdDataset(_Dataset):
                 ),
                 return_tensors="pt",
             ),
-            "text": self._tokenizer(item["caption"]),
+            "text": item["caption"],
         }
         if self._task == "train":
             target = self._label2id[item["label"]]
