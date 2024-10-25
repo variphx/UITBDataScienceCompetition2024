@@ -40,8 +40,8 @@ class VimmsdModel(_nn.Module):
     def __init__(self, device=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._device = device
-        self._image_model = ImageModel()
-        self._text_model = TextModel()
+        self._image_model = ImageModel(device=device)
+        self._text_model = TextModel(device=device)
         self._fc = _nn.Sequential(
             _nn.LazyLinear(1024),
             _nn.GELU(),
