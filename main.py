@@ -7,8 +7,6 @@ from torchvision.transforms.v2 import Compose, ToImage, ToDtype
 from transformers import AutoTokenizer, AutoImageProcessor
 from transformers import TrainingArguments
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 image_transforms = Compose([ToImage(), ToDtype(torch.float32, scale=False)])
 class_names = ["not-sarcasm", "image-sarcasm", "text-sarcasm", "multi-sarcasm"]
 
