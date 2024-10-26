@@ -80,11 +80,28 @@ class ImageModel(_nn.Module):
         self._device = device
         self._model = _get_peft_model(model_4bit, lora_config)
 
+    @staticmethod
+    def mean_pooling(model_output, attention_mask):
+        token_embeddings = model_output.last_hidden_state
+        input_mask_expanded = (
+            attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+        )
+        return _torch.sum(token_embeddings * input_mask_expanded, 1) / _torch.clamp(
+            input_mask_expanded.sum(1), min=1e-9
+        )
+
     def forward(self, encoding):
+        # encoding = encoding.to(self._device)
+        # with _torch.no_grad():
+        #     outputs = self._model(**encoding)
+
+        # return outputs.last_hidden_state[:, 0, :]
         encoding = encoding.to(self._device)
         with _torch.no_grad():
             outputs = self._model(**encoding)
-        return outputs.last_hidden_state[:, 0, :]
+        embeddings = self.mean_pooling(outputs, encoding["attention_mask"])
+        embeddings = _F.normalize(embeddings, p=2, dim=1)
+        return embeddings
 
 
 class VimmsdModel(_nn.Module):
@@ -97,10 +114,16 @@ class VimmsdModel(_nn.Module):
             _nn.LazyLinear(1024),
             _nn.GELU(),
             _nn.Dropout(0.2),
-            _nn.Linear(1024, 4096),
+            _nn.Linear(1024, 2048),
             _nn.GELU(),
             _nn.Dropout(0.2),
-            _nn.Linear(4096, 64),
+            _nn.Linear(2048, 4096),
+            _nn.GELU(),
+            _nn.Dropout(0.2),
+            _nn.Linear(4096, 1024),
+            _nn.GELU(),
+            _nn.Dropout(0.2),
+            _nn.Linear(1024, 64),
             _nn.Tanh(),
             _nn.Dropout(0.2),
             _nn.Linear(64, 4),
