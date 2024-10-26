@@ -16,7 +16,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class_names = ["not-sarcasm", "image-sarcasm", "text-sarcasm", "multi-sarcasm"]
 model = VimmsdModel(device=device).to(device=device)
-model.load_state_dict(torch.load(arguments.model_path, weights_only=True))
+model.load_state_dict(
+    torch.load(arguments.model_path, map_location=device, weights_only=True)
+)
 
 infer_dataset = VimmsdDataset(
     data_file="/kaggle/input/vimmsd-uit2024/vimmsd-public-test.json",
