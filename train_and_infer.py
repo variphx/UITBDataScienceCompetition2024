@@ -30,7 +30,7 @@ train_dataloader = DataLoader(
 vimmsd_model = model.VimmsdModel(device=device).to(device)
 vimmsd_model(**(next(iter(train_dataloader))["features"]))
 
-epochs = 30
+epochs = 8
 optimizer = AdamW8bit(vimmsd_model.parameters(), 5e-5)
 scheduler = lr_scheduler.CosineAnnealingLR(
     optimizer, T_max=epochs * len(train_dataloader)
