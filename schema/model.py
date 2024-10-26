@@ -36,10 +36,23 @@ class TextModel(_nn.Module):
         self._device = device
         self._model = _get_peft_model(model_4bit, lora_config)
 
+    @staticmethod
+    def mean_pooling(model_output, attention_mask):
+        token_embeddings = model_output[0]
+        input_mask_expanded = (
+            attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+        )
+        return _torch.sum(token_embeddings * input_mask_expanded, 1) / _torch.clamp(
+            input_mask_expanded.sum(1), min=1e-9
+        )
+
     def forward(self, encoding):
         encoding = encoding.to(self._device)
         with _torch.no_grad():
-            return self._model(**encoding)
+            outputs = self._model(**encoding)
+        embeddings = self.mean_pooling(outputs, encoding["attention_mask"])
+        embeddings = _F.normalize(embeddings, p=2, dim=1)
+        return embeddings
 
 
 class ImageModel(_nn.Module):
