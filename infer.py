@@ -34,7 +34,7 @@ for id, batch in (progress_bar := tqdm(enumerate(infer_dataloader), desc="infer"
     logits = model(**features)
     predictions = F.softmax(logits, dim=1).argmax(dim=1)
     label = class_names[predictions[0]]
-    progress_bar.set_postfix({f"id={id}", f"label={label}"})
+    progress_bar.set_postfix({"id": f"{id}", "label": f"{label}"})
     results[str(id)] = label
 
 results = {
