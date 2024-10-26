@@ -50,12 +50,9 @@ class TextModel(_nn.Module):
         encoding = encoding.to(self._device)
         with _torch.no_grad():
             outputs = self._model(**encoding)
-        if outputs.pooler_output is not None:
-            return outputs.pooler_output
-        else:
-            embeddings = self.mean_pooling(outputs, encoding["attention_mask"])
-            embeddings = _F.normalize(embeddings, p=2, dim=1)
-            return embeddings
+        embeddings = self.mean_pooling(outputs, encoding["attention_mask"])
+        embeddings = _F.normalize(embeddings, p=2, dim=1)
+        return embeddings
 
 
 class ImageModel(_nn.Module):
