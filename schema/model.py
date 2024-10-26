@@ -37,6 +37,7 @@ class TextModel(_nn.Module):
         self._model = _get_peft_model(model_4bit, lora_config)
 
     def forward(self, x):
+        print(x)
         with _torch.no_grad():
             return self._model(**x)
 
