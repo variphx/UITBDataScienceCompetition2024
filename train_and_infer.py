@@ -52,7 +52,7 @@ for epoch in range(epochs):
         optimizer.step()
         scheduler.step()
         f1_score = f1_metric(F.softmax(logits, dim=1), targets)
-        progress_bar.set_postfix({"loss": f"{loss.item():.4f}", "f1": f"{f1_score}"})
+        print(f"loss={loss.item():.4f} f1={f1_score:.4f}")
         progress_bar.update(1)
 
 torch.save(vimmsd_model.state_dict(), "/kaggle/working/model.pth")
