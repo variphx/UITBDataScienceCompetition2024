@@ -2,11 +2,12 @@ import json
 from schema import dataset, trainer, model
 import torch
 from torch import nn
-from torch.optim import AdamW, lr_scheduler
+from torch.optim import lr_scheduler
 from torch.utils.data import DataLoader
 from torch.nn import functional as F
 from torchvision.transforms.v2 import Compose, ToImage, ToDtype
 from torchmetrics.classification import MulticlassF1Score
+from bitsandbytes.optim import AdamW8bit
 from tqdm import tqdm
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -30,7 +31,7 @@ vimmsd_model = model.VimmsdModel(device=device).to(device)
 vimmsd_model(**(next(iter(train_dataloader))["features"]))
 
 epochs = 30
-optimizer = AdamW(vimmsd_model.parameters(), 5e-5)
+optimizer = AdamW8bit(vimmsd_model.parameters(), 5e-5)
 scheduler = lr_scheduler.CosineAnnealingLR(
     optimizer, T_max=epochs * len(train_dataloader)
 )

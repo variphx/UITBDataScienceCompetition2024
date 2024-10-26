@@ -48,8 +48,10 @@ class TextModel(_nn.Module):
 
     def forward(self, encoding):
         encoding = encoding.to(self._device)
+        print(encoding)
         with _torch.no_grad():
             outputs = self._model(**encoding)
+        print(outputs)
         embeddings = self.mean_pooling(outputs, encoding["attention_mask"])
         embeddings = _F.normalize(embeddings, p=2, dim=1)
         return embeddings

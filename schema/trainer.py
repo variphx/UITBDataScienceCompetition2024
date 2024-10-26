@@ -17,7 +17,7 @@ def train_collate_fn(batch):
         ),
         "text": text_tokenizer(
             [item["features"]["text"] for item in batch],
-            max_length=514,
+            max_length=1024,
             padding="max_length",
             truncation=True,
             return_tensors="pt",
