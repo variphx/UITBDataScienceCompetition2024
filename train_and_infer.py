@@ -64,6 +64,7 @@ infer_dataloader = DataLoader(
 )
 
 results = {}
+vimmsd_model.eval()
 for id, batch in (progress_bar := tqdm(enumerate(infer_dataloader), desc="infer")):
     features = batch["features"]
     logits = vimmsd_model(**features)
