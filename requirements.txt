@@ -8,3 +8,5 @@ torchmetrics
 einops
 peft
 pillow
+accelerate
+bitsandbytes

@@ -1,40 +1,77 @@
 import torch as _torch
 from torch import nn as _nn
 from torch.nn import functional as _F
-from transformers import AutoModel as _AutoModel
-from peft import LoraConfig as _LoraConfig, get_peft_model as _get_peft_model
+from transformers import (
+    AutoModel as _AutoModel,
+    BitsAndBytesConfig as _BitsAndBytesConfig,
+)
+from peft import (
+    LoraConfig as _LoraConfig,
+    prepare_model_for_kbit_training as _prepare_model_for_kbit_training,
+    get_peft_model as _get_peft_model,
+)
+import bitsandbytes as _bnb
 
 
 class TextModel(_nn.Module):
     def __init__(self, device, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        base_model = _AutoModel.from_pretrained(
-            "jinaai/jina-embeddings-v3", trust_remote_code=True
+        quantization_config = _BitsAndBytesConfig(
+            load_in_4bit=True, bnb_4bit_compute_dtype=_torch.bfloat16
         )
+        model_4bit = _AutoModel.from_pretrained(
+            "uitnlp/visobert",
+            device_map=device,
+            quantization_config=quantization_config,
+        )
+        model_4bit = _prepare_model_for_kbit_training(model_4bit)
+
         lora_config = _LoraConfig(
-            init_lora_weights="olora", target_modules=["out_proj", "dense"]
+            r=16,
+            lora_alpha=8,
+            lora_dropout=0.05,
+            init_lora_weights="pissa",
+            target_modules="all-linear",
         )
+
         self._device = device
-        self._model = _get_peft_model(base_model, lora_config).to(self._device)
+        self._model = _get_peft_model(model_4bit, lora_config)
 
     def forward(self, x):
-        return self._model.encode(x)
+        with _torch.no_grad():
+            return self._model(**x)
 
 
 class ImageModel(_nn.Module):
     def __init__(self, device, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        base_model = _AutoModel.from_pretrained("google/vit-base-patch16-224-in21k")
-        lora_config = _LoraConfig(
-            init_lora_weights="olora", target_modules=["query", "value"]
+
+        quantization_config = _BitsAndBytesConfig(
+            load_in_4bit=True, bnb_4bit_compute_dtype=_torch.bfloat16
         )
+        model_4bit = _AutoModel.from_pretrained(
+            "facebook/deit-base-distilled-patch16-224",
+            device_map=device,
+            quantization_config=quantization_config,
+        )
+        model_4bit = _prepare_model_for_kbit_training(model_4bit)
+
+        lora_config = _LoraConfig(
+            r=16,
+            lora_alpha=8,
+            lora_dropout=0.05,
+            init_lora_weights="pissa",
+            target_modules="all-linear",
+        )
+
         self._device = device
-        self._model = _get_peft_model(base_model, lora_config)
+        self._model = _get_peft_model(model_4bit, lora_config)
 
     def forward(self, x):
         x = x.to(self._device)
-        outputs = self._model(**x)
-        return outputs.last_hidden_state[:, 0, :]
+        with _torch.no_grad():
+            outputs = self._model(**x)
+        return outputs.logits
 
 
 class VimmsdModel(_nn.Module):
@@ -54,7 +91,7 @@ class VimmsdModel(_nn.Module):
             _nn.Tanh(),
             _nn.Dropout(0.2),
             _nn.Linear(64, 4),
-        ).to(self._device)
+        )
 
     def forward(self, image, text):
         image_outputs = self._image_model(image)
