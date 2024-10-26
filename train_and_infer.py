@@ -36,10 +36,12 @@ scheduler = lr_scheduler.CosineAnnealingLR(
     optimizer, T_max=epochs * len(train_dataloader)
 )
 f1_metric = MulticlassF1Score(num_classes=4).to(device=device)
+progress_bar = tqdm(range(epochs * len(train_dataloader)))
 for epoch in range(epochs):
-    for batch in (
-        progress_bar := tqdm(train_dataloader, desc=f"epoch={epoch}/{epochs}")
-    ):
+    for step, batch in enumerate(train_dataloader):
+        progress_bar.set_description(
+            f"epoch={epoch}/{epochs} batch={step}/{len(train_dataloader)}"
+        )
         optimizer.zero_grad()
         features, targets = batch["features"], batch["target"]
         targets = torch.as_tensor(targets, device=device)
@@ -51,6 +53,7 @@ for epoch in range(epochs):
         scheduler.step()
         f1_score = f1_metric(F.softmax(logits, dim=1), targets)
         progress_bar.set_postfix({"loss": f"{loss.item():.4f}", "f1": f"{f1_score}"})
+        progress_bar.update(1)
 
 torch.save(vimmsd_model.state_dict(), "/kaggle/working/model.pth")
 
