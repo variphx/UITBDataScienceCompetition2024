@@ -19,7 +19,7 @@ class TextModel(_nn.Module):
             load_in_4bit=True, bnb_4bit_compute_dtype=_torch.bfloat16
         )
         model_4bit = _AutoModel.from_pretrained(
-            "uitnlp/visobert",
+            "uitnlp/CafeBERT",
             device_map=device,
             quantization_config=quantization_config,
         )

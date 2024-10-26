@@ -3,7 +3,7 @@ from torchvision.transforms.v2 import Compose, ToImage, ToDtype
 from transformers import AutoTokenizer, AutoImageProcessor
 
 image_transforms = Compose([ToImage(), ToDtype(torch.float32, scale=False)])
-text_tokenizer = AutoTokenizer.from_pretrained("uitnlp/visobert")
+text_tokenizer = AutoTokenizer.from_pretrained("uitnlp/CafeBERT")
 image_processor = AutoImageProcessor.from_pretrained(
     "facebook/deit-base-distilled-patch16-224"
 )

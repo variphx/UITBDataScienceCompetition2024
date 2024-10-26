@@ -1,13 +1,7 @@
 import json as _json
 import pathlib as _pathlib
 from PIL import Image as _Image
-import torch as _torch
 from torch.utils.data import Dataset as _Dataset
-from torchvision.transforms.v2 import Compose as _Compose
-from transformers import (
-    PreTrainedTokenizer as _PretrainedTokenizer,
-    BaseImageProcessor as _BaseImageProcessor,
-)
 
 
 class VimmsdDataset(_Dataset):
