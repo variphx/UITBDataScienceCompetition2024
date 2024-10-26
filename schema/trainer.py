@@ -17,9 +17,10 @@ def train_collate_fn(batch):
         ),
         "text": text_tokenizer(
             [item["features"]["text"] for item in batch],
-            return_tensors="pt",
-            padding=True,
+            max_length=1024,
+            padding=1024,
             truncation=True,
+            return_tensors="pt",
         ),
     }
     targets = [item["target"] for item in batch]
