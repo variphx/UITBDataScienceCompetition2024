@@ -19,6 +19,7 @@ model = VimmsdModel(device=device).to(device=device)
 model.load_state_dict(
     torch.load(arguments.model_path, map_location=device, weights_only=True)
 )
+model.eval()
 
 infer_dataset = VimmsdDataset(
     data_file="/kaggle/input/vimmsd-uit2024/vimmsd-public-test.json",
