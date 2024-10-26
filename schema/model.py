@@ -70,7 +70,7 @@ class ImageModel(_nn.Module):
         x = x.to(self._device)
         with _torch.no_grad():
             outputs = self._model(**x)
-        return outputs.logits
+        return outputs.last_hidden_state[:, 0, :]
 
 
 class VimmsdModel(_nn.Module):
