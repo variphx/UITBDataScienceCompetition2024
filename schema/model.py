@@ -10,7 +10,6 @@ from peft import (
     prepare_model_for_kbit_training as _prepare_model_for_kbit_training,
     get_peft_model as _get_peft_model,
 )
-import bitsandbytes as _bnb
 
 
 class TextModel(_nn.Module):
@@ -30,7 +29,7 @@ class TextModel(_nn.Module):
             r=16,
             lora_alpha=8,
             lora_dropout=0.05,
-            init_lora_weights="pissa",
+            init_lora_weights="olora",
             target_modules="all-linear",
         )
 
@@ -60,7 +59,7 @@ class ImageModel(_nn.Module):
             r=16,
             lora_alpha=8,
             lora_dropout=0.05,
-            init_lora_weights="pissa",
+            init_lora_weights="olora",
             target_modules="all-linear",
         )
 
