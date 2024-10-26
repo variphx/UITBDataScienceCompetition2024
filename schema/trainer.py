@@ -15,7 +15,9 @@ def train_collate_fn(batch):
             images=[image_transforms(item["features"]["image"]) for item in batch],
             return_tensors="pt",
         ),
-        "text": text_tokenizer([item["features"]["text"] for item in batch]),
+        "text": text_tokenizer(
+            [item["features"]["text"] for item in batch], return_tensors="pt"
+        ),
     }
     targets = [item["target"] for item in batch]
 

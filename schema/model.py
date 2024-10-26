@@ -36,10 +36,10 @@ class TextModel(_nn.Module):
         self._device = device
         self._model = _get_peft_model(model_4bit, lora_config)
 
-    def forward(self, x):
-        print(x)
+    def forward(self, encoding):
+        encoding = encoding.to(self._device)
         with _torch.no_grad():
-            return self._model(**x)
+            return self._model(**encoding)
 
 
 class ImageModel(_nn.Module):
@@ -67,10 +67,10 @@ class ImageModel(_nn.Module):
         self._device = device
         self._model = _get_peft_model(model_4bit, lora_config)
 
-    def forward(self, x):
-        x = x.to(self._device)
+    def forward(self, encoding):
+        encoding = encoding.to(self._device)
         with _torch.no_grad():
-            outputs = self._model(**x)
+            outputs = self._model(**encoding)
         return outputs.last_hidden_state[:, 0, :]
 
 
