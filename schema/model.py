@@ -50,7 +50,7 @@ class TextModel(_nn.Module):
         encoding = encoding.to(self._device)
         with _torch.no_grad():
             outputs = self._model(**encoding)
-        if outputs.pooler_output:
+        if outputs.pooler_output is not None:
             return outputs.pooler_output
         else:
             embeddings = self.mean_pooling(outputs, encoding["attention_mask"])
