@@ -38,7 +38,7 @@ class TextModel(_nn.Module):
 
     @staticmethod
     def mean_pooling(model_output, attention_mask):
-        token_embeddings = model_output[0]
+        token_embeddings = model_output.last_hidden_state
         input_mask_expanded = (
             attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
         )
@@ -48,13 +48,14 @@ class TextModel(_nn.Module):
 
     def forward(self, encoding):
         encoding = encoding.to(self._device)
-        print(encoding)
         with _torch.no_grad():
             outputs = self._model(**encoding)
-        print(outputs)
-        embeddings = self.mean_pooling(outputs, encoding["attention_mask"])
-        embeddings = _F.normalize(embeddings, p=2, dim=1)
-        return embeddings
+        if outputs.pooler_output:
+            return outputs.pooler_output
+        else:
+            embeddings = self.mean_pooling(outputs, encoding["attention_mask"])
+            embeddings = _F.normalize(embeddings, p=2, dim=1)
+            return embeddings
 
 
 class ImageModel(_nn.Module):
