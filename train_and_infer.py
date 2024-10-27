@@ -16,9 +16,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 image_transforms = Compose([ToImage(), ToDtype(torch.float32, scale=False)])
 class_names = ["not-sarcasm", "image-sarcasm", "text-sarcasm", "multi-sarcasm"]
 
-text_tokenizer = trainer.text_tokenizer
-image_processor = trainer.image_processor
-
 train_dataset = dataset.VimmsdDataset(
     data_file="/kaggle/input/vimmsd-uit2024/vimmsd-train.json",
     images_dir="/kaggle/input/vimmsd-uit2024/training-images/train-images",
