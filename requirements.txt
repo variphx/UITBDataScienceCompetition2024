@@ -10,3 +10,4 @@ peft
 pillow
 accelerate
 bitsandbytes
+sentence-transformers
