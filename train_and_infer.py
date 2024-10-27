@@ -10,6 +10,8 @@ from torchvision.transforms.v2 import Compose, ToImage, ToDtype
 from torchmetrics.classification import MulticlassF1Score
 from tqdm import tqdm
 
+print("started")
+
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
