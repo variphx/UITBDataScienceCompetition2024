@@ -22,6 +22,7 @@ train_dataset = dataset.VimmsdDataset(
     class_names=class_names,
     task="train",
 )
+print(train_dataset[0])
 
 train_dataloader = DataLoader(
     train_dataset, batch_size=64, collate_fn=trainer.train_collate_fn
