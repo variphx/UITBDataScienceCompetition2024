@@ -1,13 +1,9 @@
-numpy
-pandas
 datasets
 transformers
 torch
 torchvision
 torchmetrics
-einops
-peft
-pillow
-accelerate
-bitsandbytes
+lightning
 sentence-transformers
+einops
+easyocr
