@@ -204,11 +204,11 @@ class CombinedSarcasmClassifier(L.LightningModule):
             task="multiclass",
             num_classes=len(CLASS_NAMES),
         )
-        print(f"train_loss={loss.item():.4f} train_f1={f1.item():.4f}")
         self.log_dict(
             {"train_loss": loss, "train_f1": f1},
             prog_bar=True,
             batch_size=logits.shape[0],
+            sync_dist=True,
         )
         return loss
 
@@ -223,11 +223,11 @@ class CombinedSarcasmClassifier(L.LightningModule):
             task="multiclass",
             num_classes=len(CLASS_NAMES),
         )
-        print(f"val_loss={loss.item():.4f} val_f1={f1.item():.4f}")
         self.log_dict(
             {"val_loss": loss, "val_f1": f1},
             prog_bar=True,
             batch_size=logits.shape[0],
+            sync_dist=True,
         )
 
     def predict_step(self, batch, _):
@@ -250,7 +250,9 @@ model = CombinedSarcasmClassifier()
 # model(**next(iter(DataLoader(val_ds, collate_fn=collate_fn, batch_size=1)))[0])
 
 callbacks = [L_callbacks.EarlyStopping(monitor="val_loss", mode="min", min_delta=5e-4)]
-trainer = L.Trainer(strategy="ddp_find_unused_parameters_true", max_epochs=5, callbacks=callbacks)
+trainer = L.Trainer(
+    strategy="ddp_find_unused_parameters_true", max_epochs=5, callbacks=callbacks
+)
 trainer.fit(model, train_dataloader, val_dataloader)
 
 predict_ds = DscPredictDataset()
