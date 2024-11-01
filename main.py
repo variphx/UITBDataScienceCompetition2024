@@ -60,7 +60,6 @@ class DscTrainDataset(Dataset):
 
     def __getitem__(self, index):
         item = self.data[index]
-        item["image"] = Image.open(item["image"]).convert("RGB")
         return item
 
 
@@ -94,7 +93,6 @@ class DscPredictDataset(Dataset):
 
     def __getitem__(self, index):
         item = self.data[index]
-        item["image"] = Image.open(item["image"]).convert("RGB")
         return item
 
 
@@ -110,7 +108,8 @@ def collate_fn(
     labels = []
 
     for item in batch:
-        image = np.array(item["image"])
+        image = Image.open(item["image"]).convert("RGB")
+        image = np.array(image)
         images.append(image)
 
         image_text = "\n".join(list(map(lambda result: result[1], ocr.readtext(image))))
