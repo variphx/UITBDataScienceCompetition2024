@@ -239,6 +239,7 @@ train_dataloader = DataLoader(train_ds, collate_fn=collate_fn, batch_size=32)
 val_dataloader = DataLoader(val_ds, collate_fn=collate_fn, batch_size=32)
 
 model = CombinedSarcasmClassifier()
+model(**train_ds[0][0])
 
 callbacks = [L_callbacks.EarlyStopping(monitor="val_loss", mode="min", min_delta=5e-4)]
 trainer = L.Trainer(max_epochs=5, callbacks=callbacks)
