@@ -150,14 +150,19 @@ class CombinedSarcasmClassifier(L.LightningModule):
         text_encoder = AutoModel.from_pretrained("uitnlp/CafeBERT")
         # text_encoder.train()
         text_encoder.eval()
+        text_encoder.pooler.train()
         self.text_encoder = text_encoder
 
         image_encoder = AutoModel.from_pretrained("google/vit-base-patch16-224")
         # image_encoder.train()
         image_encoder.eval()
+        image_encoder.pooler.train()
         self.image_encoder = image_encoder
 
-        self.fc = nn.LazyLinear(4)
+        self.fc = nn.Linear(
+            image_encoder.config.hidden_size + text_encoder.config.hidden_size * 2,
+            4,
+        )
 
     def setup(self, stage=None):
         self.text_encoder.to(self.device, self.dtype)
@@ -165,20 +170,23 @@ class CombinedSarcasmClassifier(L.LightningModule):
 
     def forward(self, images, image_texts, captions):
         with torch.no_grad():
-            images = self.image_encoder(**images).last_hidden_state[:, 0]
-            images = images.view(images.shape[0], -1)
+            # images = self.image_encoder(**images).last_hidden_state[:, 0]
+            images = self.image_encoder(**images).pooler_output
+            # images = images.view(images.shape[0], -1)
 
             # image_texts = self.text_encoder.encode(
             #     image_texts, convert_to_tensor=True, show_progress_bar=False
             # )
-            image_texts = self.text_encoder(**image_texts).last_hidden_state[:, 0]
-            image_texts = image_texts.view(image_texts.shape[0], -1)
+            # image_texts = self.text_encoder(**image_texts).last_hidden_state[:, 0]
+            image_texts = self.text_encoder(**image_texts).pooler_output
+            # image_texts = image_texts.view(image_texts.shape[0], -1)
 
             # captions = self.text_encoder.encode(
             #     captions, convert_to_tensor=True, show_progress_bar=False
             # )
-            captions = self.text_encoder(**captions).last_hidden_state[:, 0]
-            captions = captions.view(captions.shape[0], -1)
+            # captions = self.text_encoder(**captions).last_hidden_state[:, 0]
+            captions = self.text_encoder(**captions).pooler_output
+            # captions = captions.view(captions.shape[0], -1)
 
         embeddings = torch.cat([images, image_texts, captions], dim=1)
         logits = self.fc(embeddings)
@@ -239,7 +247,7 @@ train_dataloader = DataLoader(train_ds, collate_fn=collate_fn, batch_size=32)
 val_dataloader = DataLoader(val_ds, collate_fn=collate_fn, batch_size=32)
 
 model = CombinedSarcasmClassifier()
-model(**next(iter(DataLoader(train_ds, collate_fn=collate_fn, batch_size=1)))[0])
+# model(**next(iter(DataLoader(val_ds, collate_fn=collate_fn, batch_size=1)))[0])
 
 callbacks = [L_callbacks.EarlyStopping(monitor="val_loss", mode="min", min_delta=5e-4)]
 trainer = L.Trainer(max_epochs=5, callbacks=callbacks)
