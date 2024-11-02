@@ -144,24 +144,33 @@ class CombinedSarcasmClassifier(L.LightningModule):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # text_encoder = SentenceTransformer(
-        #     "jinaai/jina-embeddings-v3", trust_remote_code=True
-        # )
         text_encoder = AutoModel.from_pretrained("uitnlp/CafeBERT")
-        # text_encoder.train()
-        text_encoder.eval()
-        text_encoder.pooler.train()
+
+        for param in text_encoder.parameters():
+            param.requires_grad = False
+        for param in text_encoder.pooler.parameters():
+            param.requires_grad = True
+
         self.text_encoder = text_encoder
 
         image_encoder = AutoModel.from_pretrained("google/vit-base-patch16-224")
-        # image_encoder.train()
-        image_encoder.eval()
-        image_encoder.pooler.train()
+
+        for param in image_encoder.parameters():
+            param.requires_grad = False
+        for param in image_encoder.pooler.parameters():
+            param.requires_grad = True
+
         self.image_encoder = image_encoder
 
-        self.fc = nn.Linear(
-            image_encoder.config.hidden_size + text_encoder.config.hidden_size * 2,
-            4,
+        hidden_size = (
+            image_encoder.config.hidden_size + text_encoder.config.hidden_size * 2
+        )
+
+        self.fc = nn.Sequential(
+            nn.Linear(hidden_size, hidden_size),
+            nn.GELU(),
+            nn.Dropout(0.3),
+            nn.Linear(hidden_size, 4),
         )
 
     def setup(self, stage=None):
@@ -170,23 +179,9 @@ class CombinedSarcasmClassifier(L.LightningModule):
 
     def forward(self, images, image_texts, captions):
         with torch.no_grad():
-            # images = self.image_encoder(**images).last_hidden_state[:, 0]
             images = self.image_encoder(**images).pooler_output
-            # images = images.view(images.shape[0], -1)
-
-            # image_texts = self.text_encoder.encode(
-            #     image_texts, convert_to_tensor=True, show_progress_bar=False
-            # )
-            # image_texts = self.text_encoder(**image_texts).last_hidden_state[:, 0]
             image_texts = self.text_encoder(**image_texts).pooler_output
-            # image_texts = image_texts.view(image_texts.shape[0], -1)
-
-            # captions = self.text_encoder.encode(
-            #     captions, convert_to_tensor=True, show_progress_bar=False
-            # )
-            # captions = self.text_encoder(**captions).last_hidden_state[:, 0]
             captions = self.text_encoder(**captions).pooler_output
-            # captions = captions.view(captions.shape[0], -1)
 
         embeddings = torch.cat([images, image_texts, captions], dim=1)
         logits = self.fc(embeddings)
