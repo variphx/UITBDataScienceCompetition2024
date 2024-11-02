@@ -246,7 +246,11 @@ model = CombinedSarcasmClassifier()
 
 callbacks = [L_callbacks.EarlyStopping(monitor="val_loss", mode="min", min_delta=5e-4)]
 trainer = L.Trainer(
-    strategy="ddp_find_unused_parameters_true", max_epochs=5, callbacks=callbacks
+    accelerator="gpu",
+    devices=2,
+    strategy="ddp_find_unused_parameters_true",
+    max_epochs=5,
+    callbacks=callbacks,
 )
 trainer.fit(model, train_dataloader, val_dataloader)
 
