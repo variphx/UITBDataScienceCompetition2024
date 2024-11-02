@@ -11,8 +11,7 @@ from torch.utils.data import Dataset, DataLoader
 from torchmetrics.functional import f1_score
 from lightning.pytorch import callbacks as L_callbacks
 from transformers import AutoModel, AutoImageProcessor, AutoTokenizer
-from sentence_transformers import SentenceTransformer
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 from PIL import Image
 
 DATA_DIR = "/kaggle/input/vimmsd-uit2024"
@@ -199,12 +198,9 @@ class CombinedSarcasmClassifier(L.LightningModule):
             task="multiclass",
             num_classes=len(CLASS_NAMES),
         )
-        self.log_dict(
-            {"train_loss": loss, "train_f1": f1},
-            prog_bar=True,
-            batch_size=logits.shape[0],
-            sync_dist=True,
-        )
+
+        print(f"train_loss={loss.item():.4f} train_f1={f1.item():.4f}")
+
         return loss
 
     def validation_step(self, batch, _):
@@ -218,12 +214,7 @@ class CombinedSarcasmClassifier(L.LightningModule):
             task="multiclass",
             num_classes=len(CLASS_NAMES),
         )
-        self.log_dict(
-            {"val_loss": loss, "val_f1": f1},
-            prog_bar=True,
-            batch_size=logits.shape[0],
-            sync_dist=True,
-        )
+        print(f"val_loss={loss.item():.4f} val_f1={f1.item():.4f}")
 
     def predict_step(self, batch, _):
         features, _ = batch
@@ -238,13 +229,12 @@ class CombinedSarcasmClassifier(L.LightningModule):
 
 train_ds = DscTrainDataset()
 train_ds, val_ds = torch.utils.data.random_split(train_ds, [0.85, 0.15])
-train_dataloader = DataLoader(train_ds, collate_fn=collate_fn, batch_size=32)
-val_dataloader = DataLoader(val_ds, collate_fn=collate_fn, batch_size=32)
+train_dataloader = DataLoader(train_ds, collate_fn=collate_fn, batch_size=128)
+val_dataloader = DataLoader(val_ds, collate_fn=collate_fn, batch_size=128)
 
 model = CombinedSarcasmClassifier()
-# model(**next(iter(DataLoader(val_ds, collate_fn=collate_fn, batch_size=1)))[0])
 
-callbacks = [L_callbacks.EarlyStopping(monitor="val_loss", mode="min", min_delta=5e-4)]
+callbacks = [L_callbacks.EarlyStopping(monitor="val_loss", mode="min", min_delta=5e-3)]
 trainer = L.Trainer(
     accelerator="gpu",
     devices=2,
@@ -255,7 +245,7 @@ trainer = L.Trainer(
 trainer.fit(model, train_dataloader, val_dataloader)
 
 predict_ds = DscPredictDataset()
-predict_dataloader = DataLoader(predict_ds, collate_fn=collate_fn, batch_size=32)
+predict_dataloader = DataLoader(predict_ds, collate_fn=collate_fn, batch_size=128)
 predictions = trainer.predict(dataloaders=predict_dataloader, ckpt_path="best")
 
 results = {}
