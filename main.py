@@ -241,6 +241,7 @@ trainer = L.Trainer(
     strategy="ddp_find_unused_parameters_true",
     max_epochs=5,
     callbacks=callbacks,
+    log_every_n_steps=1,
 )
 trainer.fit(model, train_dataloader, val_dataloader)
 
