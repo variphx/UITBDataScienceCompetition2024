@@ -200,6 +200,7 @@ class CombinedSarcasmClassifier(L.LightningModule):
         )
 
         print(f"train_loss={loss.item():.4f} train_f1={f1.item():.4f}")
+        self.log("train_loss", loss)
 
         return loss
 
@@ -215,6 +216,7 @@ class CombinedSarcasmClassifier(L.LightningModule):
             num_classes=len(CLASS_NAMES),
         )
         print(f"val_loss={loss.item():.4f} val_f1={f1.item():.4f}")
+        self.log("val_loss", loss)
 
     def predict_step(self, batch, _):
         features, _ = batch
